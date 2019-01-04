@@ -1,0 +1,254 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #006cc7;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+}
+
+$circleSize: 160px;
+$dlPad: 20px;
+$dlWidth: 320px + $dlPad * 2;
+$dlHeight: $circleSize + 50px + $dlPad*2;
+$strokeW: 6px;
+
+.dl-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: $dlWidth;
+  height: $dlHeight;
+  padding: $dlPad;
+  margin-left: $dlWidth/-2;
+  margin-top: $dlHeight/-2;
+}
+
+.dl-svg {
+  overflow: visible;
+  display: block;
+  width: $circleSize;
+  height: $circleSize;
+  margin: 0 auto;
+  
+  &:not(.s--animating) {
+    cursor: pointer;
+  }
+  
+  path {
+    fill: none;
+    stroke-width: $strokeW;
+    stroke-linecap: round;
+  }
+  
+  &__circle {
+    stroke: #4c99d9;
+  }
+  
+  &__arrow {
+    stroke: #fff;
+  }
+  
+  &__rotater {
+    stroke: #fff;
+    opacity: 0;
+  }
+  
+  &__triangle {
+    stroke: #fff;
+    opacity: 0;
+    
+    &-piece {
+      stroke: #fff;
+      opacity: 0;
+    }
+  }
+  
+  &__progress-plc {
+    stroke: rgba(#fff, 0.4);
+    opacity: 0;
+  }
+  
+  &__progress,
+  &__progress-vert,
+  &__checkmark {
+    stroke: #fff;
+    opacity: 0;
+  }
+}
+
+.dl-status {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  left: 0;
+  top: 90px;
+  width: 100%;
+  color: #4c99d9;
+  opacity: 0;
+  transition: 0.6s;
+  transform: scale(0.8);
+  pointer-events: none;
+  
+  &.s--active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  &__numbers {
+    width: 95px;
+    line-height: 1;
+    font-size: 55px;
+    font-weight: bold;
+    text-align: center;
+    transition: 0.3s;
+    
+    .dl-status.s--active & {
+      color: #fff;
+    }
+  }
+  
+  &__perc {
+    font-size: 25px;
+  }
+}
+
+.dl-download {
+  position: absolute;
+  left: 50%;
+  top: 110%;
+  width: 155px;
+  height: 45px;
+  margin-left: -70px;
+  font-size: 24px;
+  text-transform: uppercase;
+  color: #fff;
+  border: 3px solid #fff;
+  border-radius: 4px;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  
+  &.s--visible {
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
+$numOfBaseParticles: 10;
+$particleSize: 4px;
+$particlesAT: 0.6s;
+$particlesDelay: 0;
+$partInitRnd: 3;
+$initChildX: 5px;
+$moveChange: 15px;
+$childMove: 10px;
+
+.particles {
+  position: absolute;
+  height: 1px;
+  
+  &__p {
+    position: absolute;
+    top: 0;
+    width: $particleSize;
+    height: $particleSize;
+    border-radius: 50%;
+    background: rgba(#fff, 0.8);
+    opacity: 0;
+    transition: all $particlesAT;
+    
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      transition: all $particlesAT;
+    }
+    
+    @for $i from 1 through $numOfBaseParticles {
+      &:nth-child(#{$i}) {
+        $leftStep: 100% / $numOfBaseParticles;
+        @debug $leftStep;
+        $rndX: ($partInitRnd/-2 + random($partInitRnd)) * 1px;
+        $rndY: ($partInitRnd/-2 + random($partInitRnd)) * 1px;
+        left: $i * $leftStep - $leftStep/2;
+        transform: translate($rndX, $rndY);
+        
+        &:before {
+          $rndDeg: random(360) * 1deg;
+          transform: rotate($rndDeg) translateX($initChildX);
+          
+          .particles.s--active & {
+            transform: rotate($rndDeg) translateX($initChildX + $childMove);
+          }
+        }
+        &:after {
+          $rndDeg: random(360) * 1deg;
+          transform: rotate($rndDeg) translateX($initChildX);
+          
+          .particles.s--active & {
+            transform: rotate($rndDeg) translateX($initChildX + $childMove);
+          }
+        }
+        
+        .particles.s--active & {
+          animation: fadeParticle $particlesAT 0.05s * $i + $particlesDelay ease-in-out;
+          transform: translate($rndX + $moveChange, $rndY - $moveChange);
+        }
+      }
+    }
+  }
+  
+  &.m--stage-2 {
+    left: 241px;
+    top: 50px;
+    width: 200px;
+    transform-origin: 0 0;
+    transform: rotate(63deg);
+  }
+  
+  &.m--stage-3 {
+    left: 340px;
+    top: 210px;
+    width: 300px;
+    transform-origin: 0 0;
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes fadeParticle {
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.icon-link {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  width: 32px;
+
+  img {
+    width: 100%;
+    vertical-align: top;
+  }
+
+  &--twitter {
+    left: auto;
+    right: 5px;
+  }
+}
